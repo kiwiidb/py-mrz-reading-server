@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import imutils
 import cv2
+import os
 import json
 from passporteye import read_mrz
 from imutils import paths
@@ -54,6 +55,8 @@ def getMRZData(imagePath):
 	cnts = imutils.grab_contours(cnts)
 	cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
 
+    #if we have found our mrz contour
+	found = false
 	# loop over the contours
 	for c in cnts:
 		# compute the bounding box of the contour and use the contour to
@@ -77,8 +80,12 @@ def getMRZData(imagePath):
 			# surrounding the MRZ
 			roi = image[y:y + h, x:x + w].copy()
 			cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+			found = true
 			break
 
-	cv2.imwrite("roi.png", roi)
-	mrz = read_mrz("roi.png")
-	return mrz.to_dict()
+    if found:
+        cv2.imwrite("roi.png", roi)
+        mrz = read_mrz("roi.png")
+        os.remove("roi.png")
+        return mrz.to_dict(), found
+    return {}, found

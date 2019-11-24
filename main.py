@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, jsonify
+from flask import Flask, flash, request, redirect, url_for, jsonify, status
 from werkzeug.utils import secure_filename
 from mrz import getMRZData
 
@@ -19,28 +19,30 @@ def upload_file():
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return writeError("No file present"), status.HTTP_400_BAD_REQUEST
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+            return writeError("No file present"), status.HTTP_400_BAD_REQUEST
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             uploaded_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(uploaded_filepath)
-            mrz_data = getMRZData(uploaded_filepath)
-            return jsonify(mrz_data)
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+            try: 
+                mrz_data = getMRZData(uploaded_filepath)
+            except Exception as e:
+                print(e)
+                return writeError("Something wrong"), status.HTTP_500_INTERNAL_SERVER_ERROR
+            finally:
+                os.remove(uploaded_filepath)
+            return jsonify(mrz_data), status.HTTP_200_OK
+
+    #Only POST
+    return writeError("Method not allowed"), status.HTTP_405_METHOD_NOT_ALLOWED
+
+def writeError(message):
+    return jsonify({"Error": message})
 
 if __name__ == '__main__':
     app.run(debug=True)
