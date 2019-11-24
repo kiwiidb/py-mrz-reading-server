@@ -46,8 +46,6 @@ def getMRZData(imagePath):
 	p = int(image.shape[1] * 0.05)
 	thresh[:, 0:p] = 0
 	thresh[:, image.shape[1] - p:] = 0
-	cv2.imshow('thresh', thresh)
-	cv2.waitKey(0)
 
 	# find contours in the thresholded image and sort them by their
 	# size
@@ -83,5 +81,4 @@ def getMRZData(imagePath):
 
 	cv2.imwrite("roi.png", roi)
 	mrz = read_mrz("roi.png")
-	output=json.dumps(mrz.to_dict())
-	return output
+	return mrz.to_dict()
