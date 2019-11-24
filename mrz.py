@@ -1,22 +1,17 @@
-# import the necessary packages
-from imutils import paths
 import numpy as np
 import argparse
 import imutils
 import cv2
-from passporteye import read_mrz
 import json
+from passporteye import read_mrz
+from imutils import paths
 # construct the argument parse and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--images", required=True, help="path to images directory")
-args = vars(ap.parse_args())
 
 # initialize a rectangular and square structuring kernel
 rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))
 sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (21, 21))
 
-# loop over the input image paths
-for imagePath in paths.list_images(args["images"]):
+def getMRZData(imagePath):
 	# load the image, resize it, and convert it to grayscale
 	image = cv2.imread(imagePath)
 	image = imutils.resize(image, height=600)
@@ -86,7 +81,7 @@ for imagePath in paths.list_images(args["images"]):
 			cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 			break
 
-cv2.imwrite("roi.png", roi)
-mrz = read_mrz("roi.png")
-output=json.dumps(mrz.to_dict())
-print(output)
+	cv2.imwrite("roi.png", roi)
+	mrz = read_mrz("roi.png")
+	output=json.dumps(mrz.to_dict())
+	return output

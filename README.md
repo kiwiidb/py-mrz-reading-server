@@ -1,4 +1,4 @@
-# Py-MRZ-reader
+# Py-MRZ-Reader
 
 Based on https://www.pyimagesearch.com/2015/11/30/detecting-machine-readable-zones-in-passport-images/
 
