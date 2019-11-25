@@ -38,7 +38,7 @@ def upload_file():
                 os.remove(uploaded_filepath)
             return jsonify(mrz_data), status.HTTP_200_OK
         else:
-            return writeError("Not a valid file"), status.HTTP_
+            return writeError("Not a valid file"), status.HTTP_400_BAD_REQUEST
 
     #Only POST
     return writeError("Method not allowed"), status.HTTP_405_METHOD_NOT_ALLOWED
