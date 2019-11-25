@@ -1,5 +1,6 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, jsonify, status
+from flask import Flask, flash, request, redirect, url_for, jsonify
+from flask_api import status
 from werkzeug.utils import secure_filename
 from mrz import getMRZData
 
@@ -18,7 +19,6 @@ def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
-            flash('No file part')
             return writeError("No file present"), status.HTTP_400_BAD_REQUEST
         file = request.files['file']
         # if user does not select file, browser also
@@ -37,6 +37,8 @@ def upload_file():
             finally:
                 os.remove(uploaded_filepath)
             return jsonify(mrz_data), status.HTTP_200_OK
+        else:
+            return writeError("Not a valid file"), status.HTTP_
 
     #Only POST
     return writeError("Method not allowed"), status.HTTP_405_METHOD_NOT_ALLOWED

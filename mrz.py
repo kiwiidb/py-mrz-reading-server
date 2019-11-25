@@ -56,7 +56,7 @@ def getMRZData(imagePath):
 	cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
 
     #if we have found our mrz contour
-	found = false
+	found = False
 	# loop over the contours
 	for c in cnts:
 		# compute the bounding box of the contour and use the contour to
@@ -80,12 +80,12 @@ def getMRZData(imagePath):
 			# surrounding the MRZ
 			roi = image[y:y + h, x:x + w].copy()
 			cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-			found = true
+			found = True
 			break
 
-    if found:
-        cv2.imwrite("roi.png", roi)
-        mrz = read_mrz("roi.png")
-        os.remove("roi.png")
-        return mrz.to_dict(), found
-    return {}, found
+	if found:
+		cv2.imwrite("roi.png", roi)
+		mrz = read_mrz("roi.png")
+		os.remove("roi.png")
+		return mrz.to_dict(), found
+	return {}, found
