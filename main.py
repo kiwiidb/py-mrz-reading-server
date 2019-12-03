@@ -30,7 +30,7 @@ def upload_file():
             uploaded_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(uploaded_filepath)
             try: 
-                mrz_data = getMRZData(uploaded_filepath)
+                mrz_data, found = getMRZData(uploaded_filepath)
             except Exception as e:
                 print(e)
                 return writeError("Something wrong"), status.HTTP_500_INTERNAL_SERVER_ERROR
