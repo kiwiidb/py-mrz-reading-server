@@ -18,9 +18,9 @@ def allowed_file(filename):
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
+        if 'id_file' not in request.files:
             return writeError("No file present"), status.HTTP_400_BAD_REQUEST
-        file = request.files['file']
+        file = request.files['id_file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':

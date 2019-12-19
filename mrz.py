@@ -13,8 +13,19 @@ rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))
 sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (21, 21))
 
 def getMRZData(imagePath):
-	# load the image, resize it, and convert it to grayscale
 	image = cv2.imread(imagePath)
+	for i in range(4):
+		mrz, found = getMRZDataFromImage(image)
+		if found:
+			score = mrz.to_dict()['valid_score']
+			print(mrz.to_dict())
+			if score > 45:
+				return mrz.to_dict(), True
+		image = np.rot90(image)
+	#No success
+	return None, False
+def getMRZDataFromImage(image):
+	# load the image, resize it, and convert it to grayscale
 	image = imutils.resize(image, height=600)
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -87,5 +98,8 @@ def getMRZData(imagePath):
 		cv2.imwrite("roi.png", roi)
 		mrz = read_mrz("roi.png")
 		os.remove("roi.png")
-		return mrz.to_dict(), found
+		if mrz is not None:
+			return mrz, found
+		else:
+			return {}, False
 	return {}, found
