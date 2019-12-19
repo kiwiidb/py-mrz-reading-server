@@ -6,6 +6,7 @@ import os
 import json
 from passporteye import read_mrz
 from imutils import paths
+import random, string
 # construct the argument parse and parse the arguments
 
 # initialize a rectangular and square structuring kernel
@@ -95,9 +96,14 @@ def getMRZDataFromImage(image):
 			break
 
 	if found:
-		cv2.imwrite("roi.png", roi)
-		mrz = read_mrz("roi.png")
-		os.remove("roi.png")
+		#use random temp filename because we might get into trouble
+		#with concurrent requests otherwise
+		filename = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+		fn = filename + "_roi_temp.png"
+		print(fn)
+		cv2.imwrite(fn, roi)
+		mrz = read_mrz(fn)
+		os.remove(fn)
 		if mrz is not None:
 			return mrz, found
 		else:
